@@ -2,34 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LW2.LW2_1
 {
-    class QualityAttribute<T> : DataGroupingTool<T>
+    class QualityAttribute : IGroupingTool
     {
-        protected override Dictionary<T, List<Employee>> Group()
+        public Dictionary<object, List<T>> Group<T>(IEnumerable<T> data, string propertyName)
         {
-            var N = Enum.GetValues(typeof(T)).Length;
+            var gropedData = new Dictionary<object, List<T>>();
+            var property = typeof(T).GetProperty(propertyName);
+
+            var N = Enum.GetValues(property.PropertyType).Length;
             var n = (int)Math.Log2(N) + 1;
 
             for (int i = 0; i < n; i++)
             {
-                var group = (T)Enum.GetValues(typeof(T)).GetValue(i);
-                var dataGroups = new List<Employee>();
+                var group = Enum.GetValues(property.PropertyType).GetValue(i);
+                var dataGroups = new List<T>();
 
-                foreach (var value in SourceData)
+                foreach (var value in data)
                 {
-                    if (group.Equals(value.Gender))
+                    if (group.Equals(property.GetValue(value)))
                     {
                         dataGroups.Add(value);
                     }
                 }
 
-                _grouppedData.Add(group, dataGroups);
+                gropedData.Add(group, dataGroups);
             }
 
-            return _grouppedData;
+            return gropedData;
         }
     }
 }

@@ -6,42 +6,47 @@ using System.Threading.Tasks;
 
 namespace LW2.LW2_1
 {
-    class QuantitativeAttribute<T> : DataGroupingTool<T>
+    class QuantitativeAttribute : IGroupingTool
     {
-
-
-        protected override Dictionary<T, List<Employee>> Group()
+        public Dictionary<object, List<T>> Group<T>(IEnumerable<T> data, string propertyName)
         {
-            var N = SourceData.Select(x => x.WorkExperience).Distinct().Count();
+            var groupedData = new Dictionary<object, List<T>>();
+            var property = typeof(T).GetProperty(propertyName);
+
+            var N = data.Select(x => property.GetValue(x)).Distinct().Count();
             var n = (int)Math.Log2(N) + 1;
 
-            var xMax = SourceData.Aggregate((x, y) => x.Age > y.Age ? x : y).Age;
-            var xMin = SourceData.Aggregate((x, y) => x.Age < y.Age ? x : y).Age;
-            var length = (int)Math.Ceiling( (xMax - xMin) / (double)n );
+            var maxValueObject = data.Aggregate((x, y) => (int)property.GetValue(x) >= (int)property.GetValue(y) ? x : y);
+            var minValueObject = data.Aggregate((x, y) => (int)property.GetValue(x) < (int)property.GetValue(y) ? x : y);
 
-            var limit = xMin;
-            var nLimit = limit + length;
+            var maxValue = (int)property.GetValue(maxValueObject);
+            var minValue = (int)property.GetValue(minValueObject);
+
+            var length = (int)Math.Ceiling((maxValue - minValue) / (double)n);
+
+            var minLimit = minValue;
+            var maxLimit = minLimit + length;
 
             for (int i = 0; i < n; i++)
             {
-                var dataGroups = new List<Employee>();
-                var group = $"{limit} - {nLimit}";
-                
-                foreach (var value in SourceData)
+                var dataGroups = new List<T>();
+                var group = $"from {minLimit} to {maxLimit}";
+
+                foreach (var value in data)
                 {
-                    if (value.Age >= limit && value.Age < nLimit)
+                    if ((int)property.GetValue(value) >= minLimit && (int)property.GetValue(value) < maxLimit)
                     {
                         dataGroups.Add(value);
                     }
                 }
 
-                _grouppedData.Add((T)Convert.ChangeType(group, typeof(T)), dataGroups);
+                groupedData.Add(group, dataGroups);
 
-                limit = nLimit;
-                nLimit += length;
+                minLimit = maxLimit;
+                maxLimit += length;
             }
 
-            return _grouppedData;
+            return groupedData;
         }
     }
 }
