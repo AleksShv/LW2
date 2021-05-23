@@ -49,11 +49,6 @@ namespace LW2.LW2_1
             groups = groupTool.Group(employees, nameof(Employee.Age));
             PrintEmploeeGroup(groups);
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Work Expirience");
-            groups = groupTool.Group(employees, nameof(Employee.WorkExperience));
-            PrintEmploeeGroup(groups);
-
             List<Recipient> recipients = new List<Recipient>()
             {
                 new Recipient("Елизавета", 22),
@@ -63,6 +58,7 @@ namespace LW2.LW2_1
                 new Recipient("София", 27),
                 new Recipient("Арина", 22),
                 new Recipient("Михаил", 26),
+                new Recipient("Лицо24", 24),
             };
 
             PrintRecipient();

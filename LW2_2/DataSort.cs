@@ -21,8 +21,10 @@ namespace LW2.LW2_2
             };
 
             PrintMixedData();
+            Console.WriteLine();
             MixedDataSort mixedSort = new MixedDataSort();
             mixedSort.SortAndPrint(ref mixedData);
+            Console.WriteLine();
 
             PrintTimePoints("Source Time Points");
             TimePointsSort pointSort = new TimePointsSort();
